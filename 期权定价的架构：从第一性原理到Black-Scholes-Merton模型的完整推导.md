@@ -128,9 +128,9 @@ C_t−\Delta t=e^{−r\Delta t}\left[p^{∗}C_{t,u}+(1−p^{∗})C_{t,d}\right]
 -   **计算过程**:
     
     1.  **计算风险中性概率 $p^{∗}$** :
-    ```math      
-    p^{∗}=\frac{(1+r)−d}{u−d}=\frac{1.05−0.8}{1.2−0.8}=0.625
-    ```
+         
+    $p^{∗}=\frac{(1+r)−d}{u−d}=\frac{1.05−0.8}{1.2−0.8}=0.625$
+    
     2.  **构建股价树 (从左到右)**:
         
         -   $t=0: S_0=100$
@@ -153,7 +153,7 @@ C_t−\Delta t=e^{−r\Delta t}\left[p^{∗}C_{t,u}+(1−p^{∗})C_{t,d}\right]
             
         -   $C_d=\frac{p^{∗}C_{ud}+(1−p^{∗})C_{dd}}{1+r}=\frac{0.625×0+(1−0.625)×0}{1.05}=0$
             
-    6.  **倒推至 $t=0$ **:
+    5.  **倒推至 $t=0$**:
         
         -   $C_0​=\frac{p^{∗}C_u+(1−p^{∗})C_d}{1+r}=\frac{0.625×26.19+(1−0.625)×0}{1.05}=15.60$
             
@@ -184,7 +184,7 @@ C_t−\Delta t=e^{−r\Delta t}\left[p^{∗}C_{t,u}+(1−p^{∗})C_{t,d}\right]
 **几何布朗运动 (GBM)**
 
 直接用维纳过程来模拟股票价格存在一个致命缺陷：它可以取负值，而股票价格永远不会低于零。为了解决这个问题，金融学家们普遍采用几何布朗运动（Geometric Brownian Motion, GBM）作为股票价格的标准模型 。GBM假设股票收益率（而非价格本身）服从一个带有漂移的布朗运动。其随机微分方程（SDE）形式如下：
-$$ dS=μSdt+σSdW $$
+$$dS=μSdt+σSdW$$
 这个方程可以直观地拆解为两部分：
 
 -   **漂移项（Drift）**: $μSdt$ 。这是一个确定性部分，表示在 $dt$ 时间内，股价随时间推移的预期增长趋势。 $μ$ 是股票的年化预期收益率。
@@ -196,10 +196,10 @@ $$ dS=μSdt+σSdW $$
 
 当标的资产 $S$ 的运动轨迹是随机的（遵循GBM），那么期权价格 $C(S,t)$ 的变化轨迹也必然是随机的。我们如何描述 $C$ 的微小变化 $dC$ 呢？传统的微积分（如链式法则）在这里失效了。原因在于，传统微积分的泰勒展开式中，高阶项（如 $(dt)^2$ ）会比 $dt$ 更快地趋近于零，因此可以忽略。但在随机微积分中，由于维纳过程的特性， $(dW)^2$ 的量级是 $dt$ ，而不是 $(dt)^2$ 。这意味着二阶项不能被忽略，它对最终结果有实质性的影响 。  
 
-**伊藤引理（Itô's Lemma）** 正是为解决这一问题而生的，它被称为“随机过程的链式法则” 。对于一个函数  
-
-$C(S,t)$ ，其中S遵循我们之前定义的GBM过程，伊藤引理给出了 $dC$ 的表达式： 
-$$ dC = \left( \frac{\partial C}{\partial t} + \mu S \frac{\partial C}{\partial S} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2} \right)dt + \left( \sigma S \frac{\partial C}{\partial S} \right)dW $$
+**伊藤引理（Itô's Lemma）** 正是为解决这一问题而生的，它被称为“随机过程的链式法则” 。对于一个函数 $C(S,t)$ ，其中S遵循我们之前定义的GBM过程，伊藤引理给出了 $dC$ 的表达式：
+```math
+dC = \left( \frac{\partial C}{\partial t} + \mu S \frac{\partial C}{\partial S} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2} \right)dt + \left( \sigma S \frac{\partial C}{\partial S} \right)dW
+```
 与传统链式法则相比，伊藤引理多出了一个关键的额外项： $\frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2}dt$ 。这一项被称为“伊藤修正项”，它完全来自于随机过程的方差 $（(dW)^2≈dt）$ ，体现了资产价格的波动性本身对衍生品价值变化产生的确定性影响 。直观地讲，由于资产价格的波动，一个凸性函数（如期权价格）的期望值会因为这种波动而系统性地增加，伊藤引理精确地捕捉了这一效应。  
 
 ### 3.3 概念之桥：从二叉树到Black-Scholes的收敛
@@ -224,24 +224,34 @@ $$ dC = \left( \frac{\partial C}{\partial t} + \mu S \frac{\partial C}{\partial 
 
 $$dC = \left( \frac{\partial C}{\partial t} + \mu S \frac{\partial C}{\partial S} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2} \right)dt + \left( \sigma S \frac{\partial C}{\partial S} \right)dW$$
 
-**第二步：构建无风险投资组合** 我们构建一个投资组合$\Pi$，该组合包含**卖空1单位期权**（获得现金$C$）和**买入 $\Delta$ 单位股票**（花费 $\Delta S$ ）。该组合的价值为：
-$$ \Pi=−C+\Delta S $$
+**第二步：构建无风险投资组合** 我们构建一个投资组合 $\Pi$ ，该组合包含**卖空1单位期权**（获得现金 $C$ ）和**买入 $\Delta$ 单位股票**（花费 $\Delta S$ ）。该组合的价值为：
+```math
+\Pi=−C+\Delta S
+```
 **第三步：消除风险（Delta对冲）** 我们考察该投资组合价值的微小变化 $d\Pi$ ：
-
-$d\Pi=−dC+\Delta dS$
-
+```math
+d\Pi=−dC+\Delta dS
+```
 将第一步中 $dC$ 的表达式和 $dS$ 的GBM表达式代入上式。我们会发现， $d\Pi$ 的表达式中既包含确定性的 $dt$ 项，也包含随机性的 $dW$ 项。这里的核心洞见是：我们可以通过巧妙地选择持有股票的数量 $\Delta$ ，使得随机项 $dW$ 的系数恰好为零。 $d\Pi$ 中的随机部分来自于 $-dC$ 中的随机项和 $\Delta dS$ 中的随机项，即：
-$$ \text{随机部分} = - \left( \sigma S \frac{\partial C}{\partial S} \right)dW + \Delta (\sigma S dW) = \left( -\sigma S \frac{\partial C}{\partial S} + \Delta \sigma S \right)dW $$
+```math
+\text{随机部分} = - \left( \sigma S \frac{\partial C}{\partial S} \right)dW + \Delta (\sigma S dW) = \left( -\sigma S \frac{\partial C}{\partial S} + \Delta \sigma S \right)dW
+```
 为了消除所有风险（即随机性），我们只需令上式括号内的系数等于零，这就给出了 $\Delta$ 的唯一选择： $\Delta = \frac{\partial C}{\partial S}$ 。这个 $\Delta$ 正是我们在二叉树模型中遇到的对冲比率，它在连续时间下的含义是期权价格对标的资产价格的一阶偏导数。
 
 **第四步：调用无套利原则** 
-选择了 $\Delta = \frac{\partial C }{ \partial S}$ 后，我们投资组合 $d\Pi$ 中的所有随机项都被完全对冲掉了，它变成了一个在瞬间内（infinitesimal time interval）完全无风险的资产。根据无套利原则，任何无风险的投资都必须获得且仅能获得无风险收益率 $r$ 。因此，我们的投资组合价值的变化必须满足：  
-$$ d\Pi=r\Pi dt=r(−C+\Delta S)dt $$
+选择了 $\Delta = \frac{\partial C }{ \partial S}$ 后，我们投资组合 $d\Pi$ 中的所有随机项都被完全对冲掉了，它变成了一个在瞬间内（infinitesimal time interval）完全无风险的资产。根据无套利原则，任何无风险的投资都必须获得且仅能获得无风险收益率 $r$ 。因此，我们的投资组合价值的变化必须满足：
+```math
+d\Pi=r\Pi dt=r(−C+\Delta S)dt
+```
 **第五步：形成偏微分方程（PDE）** 
-现在我们有了两个关于$d\Pi$的表达式。一个是通过对冲得到的确定性收益，另一个是无套利原则要求的无风险收益。令两者相等： 
-$$ \left( -\frac{\partial C}{\partial t} - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2} \right)dt = r\left(-C + \frac{\partial C}{\partial S} S\right)dt $$
-（注：这里代入了 $\Delta = \partial C / \partial S$ ，并且 $d\Pi$ 中与 $\mu$ 相关的项恰好被抵消了）。整理上式，消去 $dt$ ，我们便得到了著名的**Black-Scholes偏微分方程**： 
-$$ \frac{\partial C}{\partial t} + rS \frac{\partial C}{\partial S} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2} - rC = 0 $$
+现在我们有了两个关于 $d\Pi$ 的表达式。一个是通过对冲得到的确定性收益，另一个是无套利原则要求的无风险收益。令两者相等：
+```math
+\left( -\frac{\partial C}{\partial t} - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2} \right)dt = r\left(-C + \frac{\partial C}{\partial S} S\right)dt
+```
+（注：这里代入了 $\Delta = \partial C / \partial S$ ，并且 $d\Pi$ 中与 $\mu$ 相关的项恰好被抵消了）。整理上式，消去 $dt$ ，我们便得到了著名的**Black-Scholes偏微分方程**：
+```math
+\frac{\partial C}{\partial t} + rS \frac{\partial C}{\partial S} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 C}{\partial S^2} - rC = 0
+```
 这个推导过程的精妙之处在于，通过构建一个动态对冲的无风险组合，我们成功地将那个无法观测、充满主观性的参数——股票的预期收益率 $\mu$ ——从最终的定价方程中彻底消除了。
 
 ### 4.2 求解PDE：Black-Scholes公式及其经济内涵
@@ -249,12 +259,16 @@ $$ \frac{\partial C}{\partial t} + rS \frac{\partial C}{\partial S} + \frac{1}{2
 求解上述偏微分方程需要设定边界条件（如期权到期时的价值），并应用高等数学技巧（通常是将其变换为物理学中的热传导方程）。这里我们直接给出该PDE对于一份不付红利的欧式看涨期权的解，即  
 
 **Black-Scholes定价公式**：
-
-$$C(S,t)=S_t​N(d_1​)−Ke^{−r(T−t)}N(d_2​)$$
-
+```math
+C(S,t)=S_t​N(d_1​)−Ke^{−r(T−t)}N(d_2​)
+```
 其中， $T−t$ 是剩余到期时间，
-$$ d_1=\frac{\ln(S_t / K)+(r+\frac{1}{2}\sigma^2)(T-t)}{\sigma\sqrt {T-t}} $$
-$$ d_2=d_1-\sigma\sqrt{T-t} $$
+```math
+\begin{gather}
+d_1=\frac{\ln(S_t / K)+(r+\frac{1}{2}\sigma^2)(T-t)}{\sigma\sqrt {T-t}} \\
+d_2=d_1-\sigma\sqrt{T-t}
+\end{gather}
+```
 $N(\cdot)$ 是标准正态分布的累积分布函数。
 
 这个公式不仅是一个计算工具，更是一句优美的金融语言，其各项都有着深刻的经济含义 ：  
